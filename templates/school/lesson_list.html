@@ -1,0 +1,187 @@
+{% extends "base.html" %} {% block title %} {% if user.role == 'student' %}Mes
+rendez-vous{% elif user.role == 'instructor' %}Mes leçons{% else %}Leçons{%
+endif %} {% endblock %} {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">
+        <i class="bi bi-calendar3 me-2"></i>
+        {% if user.role == 'student' %}Mes rendez-vous{% elif user.role ==
+        'instructor' %}Mes leçons{% else %}Toutes les leçons{% endif %}
+    </h1>
+    {% if user.role == 'secretary' or user.role == 'admin' %}
+    <a href="{% url 'lesson-create' %}" class="btn btn-primary"
+        ><i class="bi bi-plus-lg me-1"></i>Nouveau RDV</a
+    >
+    {% elif user.role == 'instructor' %}
+    <a href="{% url 'lesson-create-instructor' %}" class="btn btn-success"
+        ><i class="bi bi-plus-lg me-1"></i>Planifier une leçon</a
+    >
+    {% elif user.role == 'student' %}
+    <a href="{% url 'lesson-book' %}" class="btn btn-primary"
+        ><i class="bi bi-calendar-plus me-1"></i>Prendre un RDV</a
+    >
+    {% endif %}
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="d-flex gap-2 align-items-center flex-wrap">
+            <label class="form-label mb-0 fw-semibold small">Statut :</label>
+            <select
+                name="status"
+                class="form-select form-select-sm"
+                style="width: auto"
+                onchange="this.form.submit()"
+            >
+                <option value="">Tous</option>
+                <option
+                    value="scheduled"
+                    {%
+                    if
+                    request.GET.status=""
+                    ="scheduled"
+                    %}selected{%
+                    endif
+                    %}
+                >
+                    Planifiées
+                </option>
+                <option
+                    value="done"
+                    {%
+                    if
+                    request.GET.status=""
+                    ="done"
+                    %}selected{%
+                    endif
+                    %}
+                >
+                    Effectuées
+                </option>
+                <option
+                    value="cancelled"
+                    {%
+                    if
+                    request.GET.status=""
+                    ="cancelled"
+                    %}selected{%
+                    endif
+                    %}
+                >
+                    Annulées
+                </option>
+            </select>
+            {% if request.GET.status %}<a
+                href="{% url 'lesson-list' %}"
+                class="btn btn-sm btn-link text-danger p-0"
+                >Effacer</a
+            >{% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if lessons %}
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    {% if user.role != 'student' %}
+                    <th>Élève</th>
+                    {% endif %} {% if user.role != 'instructor' %}
+                    <th>Moniteur</th>
+                    {% endif %}
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Véhicule</th>
+                    <th>Durée</th>
+                    <th>Statut</th>
+                    {% if user.role != 'student' %}
+                    <th class="text-end">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in lessons %}
+                <tr>
+                    {% if user.role != 'student' %}
+                    <td>
+                        <a
+                            href="{% url 'student-detail' lesson.student.pk %}"
+                            class="text-decoration-none"
+                            >{{ lesson.student }}</a
+                        >
+                    </td>
+                    {% endif %} {% if user.role != 'instructor' %}
+                    <td>{{ lesson.instructor }}</td>
+                    {% endif %}
+                    <td>{{ lesson.date|date:"d/m/Y" }}</td>
+                    <td>{{ lesson.date|date:"H:i" }}</td>
+                    <td>{{ lesson.vehicle|default:"—" }}</td>
+                    <td>{{ lesson.duration }} min</td>
+                    <td>
+                        {% if lesson.status == 'done' %}<span
+                            class="badge bg-success"
+                            >Effectuée</span
+                        >
+                        {% elif lesson.status == 'cancelled' %}<span
+                            class="badge bg-danger"
+                            >Annulée</span
+                        >
+                        {% else %}<span class="badge bg-primary">Planifiée</span
+                        >{% endif %}
+                    </td>
+                    {% if user.role != 'student' %}
+                    <td class="text-end">
+                        <a
+                            href="{% url 'lesson-update' lesson.pk %}"
+                            class="btn btn-sm btn-outline-secondary me-1"
+                            ><i class="bi bi-pencil"></i
+                        ></a>
+                        <a
+                            href="{% url 'lesson-delete' lesson.pk %}"
+                            class="btn btn-sm btn-outline-danger"
+                            ><i class="bi bi-trash"></i
+                        ></a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if is_paginated %}
+        <div class="d-flex justify-content-center py-3">
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                            >&laquo;</a
+                        >
+                    </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                        <span class="page-link"
+                            >{{ page_obj.number }} / {{
+                            page_obj.paginator.num_pages }}</span
+                        >
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                            >&raquo;</a
+                        >
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %} {% else %}
+        <p class="text-muted text-center py-5">Aucune leçon trouvée.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

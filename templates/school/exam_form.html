@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}{% if object %}Modifier l'examen{%
+else %}Nouvel examen{% endif %}{% endblock %} {% block content %}
+<div class="mb-4">
+    <a
+        href="{% url 'exam-list' %}"
+        class="text-muted text-decoration-none small"
+        ><i class="bi bi-arrow-left me-1"></i>Examens</a
+    >
+    <h1 class="h3 fw-bold mb-0 mt-1">
+        {% if object %}Modifier l'examen{% else %}Nouvel examen{% endif %}
+    </h1>
+</div>
+<div class="card" style="max-width: 560px">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Élève</label>{{
+                    form.student }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Type d'examen</label
+                    >{{ form.exam_type }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Date</label>{{
+                    form.date }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Résultat</label>{{
+                    form.result }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"
+                        >Score
+                        <span class="text-muted fw-normal"
+                            >(/40 pour le code)</span
+                        ></label
+                    >{{ form.score }}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Notes</label>{{
+                    form.notes }}
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Enregistrer
+                </button>
+                <a
+                    href="{% url 'exam-list' %}"
+                    class="btn btn-outline-secondary"
+                    >Annuler</a
+                >
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

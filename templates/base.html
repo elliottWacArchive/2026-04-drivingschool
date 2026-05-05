@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}Auto-École{% endblock %} | Intranet</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        />
+        <style>
+            body {
+                background-color: #f4f6f9;
+            }
+            .sidebar {
+                min-height: 100vh;
+                background: #1a2942;
+                width: 220px;
+                flex-shrink: 0;
+            }
+            .sidebar .nav-link {
+                color: #adb5bd;
+                border-radius: 6px;
+                margin-bottom: 2px;
+                font-size: 0.9rem;
+            }
+            .sidebar .nav-link:hover,
+            .sidebar .nav-link.active {
+                background: #2d4a7a;
+                color: #fff;
+            }
+            .sidebar .brand {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #fff;
+                padding: 1.2rem 1rem;
+                border-bottom: 1px solid #2d4a7a;
+            }
+            .sidebar .nav-section {
+                font-size: 0.65rem;
+                font-weight: 700;
+                color: #6c757d;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                padding: 0.6rem 1rem 0.2rem;
+            }
+            .sidebar .role-badge {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.5rem;
+                border-radius: 20px;
+            }
+            .main-content {
+                padding: 2rem;
+                flex: 1;
+                min-width: 0;
+            }
+            .card {
+                border: none;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
+            }
+            .stat-card {
+                transition: transform 0.15s;
+            }
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+            .badge-pass {
+                background-color: #198754;
+            }
+            .badge-fail {
+                background-color: #dc3545;
+            }
+            .badge-pending {
+                background-color: #6c757d;
+            }
+            .hours-bar {
+                height: 8px;
+                border-radius: 4px;
+            }
+        </style>
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <div class="d-flex" style="min-height: 100vh">
+            {% if user.is_authenticated %}
+            <nav class="sidebar d-flex flex-column p-2">
+                <div class="brand">
+                    <i class="bi bi-car-front-fill me-2"></i>Auto-École
+                    <div class="mt-1">
+                        {% if user.role == 'admin' %}
+                        <span class="badge bg-danger role-badge"
+                            >Administrateur</span
+                        >
+                        {% elif user.role == 'secretary' %}
+                        <span class="badge bg-warning text-dark role-badge"
+                            >Secrétaire</span
+                        >
+                        {% elif user.role == 'instructor' %}
+                        <span class="badge bg-success role-badge"
+                            >Moniteur</span
+                        >
+                        {% else %}
+                        <span class="badge bg-primary role-badge">Élève</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <ul class="nav flex-column mt-2 flex-grow-1">
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'dashboard' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                        >
+                            <i class="bi bi-speedometer2 me-2"></i>Tableau de
+                            bord
+                        </a>
+                    </li>
+
+                    {% if user.role == 'student' %}
+                    <li class="nav-section mt-1">Ma formation</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'lesson-list' %}"
+                            class="nav-link {% if 'lesson' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-calendar3 me-2"></i>Mes rendez-vous
+                        </a>
+                    </li>
+                    {% endif %} {% if user.role == 'instructor' %}
+                    <li class="nav-section mt-1">Mon planning</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'lesson-list' %}"
+                            class="nav-link {% if 'lesson' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-calendar3 me-2"></i>Mes leçons
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'lesson-create' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'lesson-create' %}active{% endif %}"
+                        >
+                            <i class="bi bi-calendar-plus me-2"></i>Planifier
+                            une leçon
+                        </a>
+                    </li>
+                    <li class="nav-section mt-1">Élèves</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'student-list' %}"
+                            class="nav-link {% if 'student' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-people me-2"></i>Fiches élèves
+                        </a>
+                    </li>
+                    {% endif %} {% if user.role == 'secretary' or user.role ==
+                    'admin' %}
+                    <li class="nav-section mt-1">Plannings</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'planning' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}"
+                        >
+                            <i class="bi bi-calendar-week me-2"></i>Planning
+                            général
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'lesson-list' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'lesson-list' %}active{% endif %}"
+                        >
+                            <i class="bi bi-list-ul me-2"></i>Toutes les leçons
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'lesson-create' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'lesson-create' %}active{% endif %}"
+                        >
+                            <i class="bi bi-calendar-plus me-2"></i>Nouveau RDV
+                        </a>
+                    </li>
+                    <li class="nav-section mt-1">Gestion</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'student-list' %}"
+                            class="nav-link {% if 'student' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-people me-2"></i>Élèves
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'instructor-list' %}"
+                            class="nav-link {% if 'instructor' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-person-badge me-2"></i>Moniteurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'exam-list' %}"
+                            class="nav-link {% if 'exam' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-clipboard-check me-2"></i>Examens
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'vehicle-list' %}"
+                            class="nav-link {% if 'vehicle' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-car-front me-2"></i>Véhicules
+                        </a>
+                    </li>
+                    {% if user.role == 'admin' %}
+                    <li class="nav-section mt-1">Administration</li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'secretary-list' %}"
+                            class="nav-link {% if 'secretary' in request.resolver_match.url_name %}active{% endif %}"
+                        >
+                            <i class="bi bi-person-gear me-2"></i>Secrétaires
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            href="{% url 'admin:index' %}"
+                            class="nav-link"
+                            target="_blank"
+                        >
+                            <i class="bi bi-shield-lock me-2"></i>Admin Django
+                        </a>
+                    </li>
+                    {% endif %} {% endif %}
+                </ul>
+
+                <div class="border-top border-secondary pt-2 mt-2">
+                    <div class="nav-link text-white-50 small px-2 mb-1">
+                        {{ user.get_full_name|default:user.username }}
+                    </div>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="nav-link text-danger w-100 text-start border-0 bg-transparent"
+                        >
+                            <i class="bi bi-box-arrow-left me-2"></i>Déconnexion
+                        </button>
+                    </form>
+                </div>
+            </nav>
+            {% endif %}
+
+            <div class="main-content">
+                {% if messages %} {% for message in messages %}
+                <div
+                    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                    role="alert"
+                >
+                    {{ message }}
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                    ></button>
+                </div>
+                {% endfor %} {% endif %} {% block content %}{% endblock %}
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

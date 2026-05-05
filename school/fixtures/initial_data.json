@@ -1,0 +1,131 @@
+[
+  {
+    "model": "school.customuser", "pk": 1,
+    "fields": { "username": "admin", "email": "admin@autoecole.fr",
+      "password": "pbkdf2_sha256$1200000$ejfVjJm6V83tBU1UgJuzzB$R+mHhd+VqV9nac0Jq0dG83MvrpfT2oJyArwJZ+PTP/c=",
+      "first_name": "Alice", "last_name": "Martin", "role": "admin",
+      "is_staff": true, "is_superuser": true, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 2,
+    "fields": { "username": "secretaire1", "email": "sophie.bernard@autoecole.fr",
+      "password": "pbkdf2_sha256$1200000$F0JahSnmXsfPrxoMtTkmAa$AgqF1S6M+D1JsIkpandCOpPyfefsTQtBWxfiaYdgHU4=",
+      "first_name": "Sophie", "last_name": "Bernard", "role": "secretary",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 3,
+    "fields": { "username": "moniteur1", "email": "jean.dupont@autoecole.fr",
+      "password": "pbkdf2_sha256$1200000$tGtmRCqBABhZB6nShW0MdQ$yi6OgcoohpLo9kMJ7JAqtGNrF/cZ37fua0hjipNbJuo=",
+      "first_name": "Jean", "last_name": "Dupont", "role": "instructor",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 4,
+    "fields": { "username": "moniteur2", "email": "marie.leroy@autoecole.fr",
+      "password": "pbkdf2_sha256$1200000$tGtmRCqBABhZB6nShW0MdQ$yi6OgcoohpLo9kMJ7JAqtGNrF/cZ37fua0hjipNbJuo=",
+      "first_name": "Marie", "last_name": "Leroy", "role": "instructor",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 5,
+    "fields": { "username": "eleve1", "email": "lucas.moreau@email.fr",
+      "password": "pbkdf2_sha256$1200000$XWR9QmW0yoXBC2f01J8oQ0$d02zXlY6cNqnRpBxTlddJiIOWQWiW1dJLqcfklvXjwI=",
+      "first_name": "Lucas", "last_name": "Moreau", "role": "student",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 6,
+    "fields": { "username": "eleve2", "email": "emma.petit@email.fr",
+      "password": "pbkdf2_sha256$1200000$XWR9QmW0yoXBC2f01J8oQ0$d02zXlY6cNqnRpBxTlddJiIOWQWiW1dJLqcfklvXjwI=",
+      "first_name": "Emma", "last_name": "Petit", "role": "student",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.customuser", "pk": 7,
+    "fields": { "username": "eleve3", "email": "noah.simon@email.fr",
+      "password": "pbkdf2_sha256$1200000$XWR9QmW0yoXBC2f01J8oQ0$d02zXlY6cNqnRpBxTlddJiIOWQWiW1dJLqcfklvXjwI=",
+      "first_name": "Noah", "last_name": "Simon", "role": "student",
+      "is_staff": false, "is_superuser": false, "is_active": true, "groups": [], "user_permissions": [] }
+  },
+  {
+    "model": "school.instructorprofile", "pk": 1,
+    "fields": { "user": 3, "phone": "06 12 34 56 78" }
+  },
+  {
+    "model": "school.instructorprofile", "pk": 2,
+    "fields": { "user": 4, "phone": "06 98 76 54 32" }
+  },
+  {
+    "model": "school.studentprofile", "pk": 1,
+    "fields": { "user": 5, "phone": "06 11 22 33 44", "birth_date": "2003-07-14", "address": "12 rue des Lilas, 75011 Paris" }
+  },
+  {
+    "model": "school.studentprofile", "pk": 2,
+    "fields": { "user": 6, "phone": "06 22 33 44 55", "birth_date": "2004-02-28", "address": "5 avenue Victor Hugo, 69002 Lyon" }
+  },
+  {
+    "model": "school.studentprofile", "pk": 3,
+    "fields": { "user": 7, "phone": "06 33 44 55 66", "birth_date": "2002-11-05", "address": "8 place Bellecour, 69002 Lyon" }
+  },
+  {
+    "model": "school.vehicle", "pk": 1,
+    "fields": { "name": "Renault Clio", "transmission": "manual" }
+  },
+  {
+    "model": "school.vehicle", "pk": 2,
+    "fields": { "name": "Peugeot 208", "transmission": "manual" }
+  },
+  {
+    "model": "school.vehicle", "pk": 3,
+    "fields": { "name": "Citroën C3", "transmission": "auto" }
+  },
+  {
+    "model": "school.hourpackage", "pk": 1,
+    "fields": { "student": 1, "minutes": 1200, "purchased_at": "2025-09-01T10:00:00+02:00", "added_by": 2, "notes": "Forfait initial 20h" }
+  },
+  {
+    "model": "school.hourpackage", "pk": 2,
+    "fields": { "student": 1, "minutes": 600, "purchased_at": "2026-01-15T10:00:00+01:00", "added_by": 2, "notes": "Recharge 10h" }
+  },
+  {
+    "model": "school.hourpackage", "pk": 3,
+    "fields": { "student": 2, "minutes": 1800, "purchased_at": "2025-10-15T09:00:00+02:00", "added_by": 2, "notes": "Forfait initial 30h" }
+  },
+  {
+    "model": "school.hourpackage", "pk": 4,
+    "fields": { "student": 3, "minutes": 1200, "purchased_at": "2025-08-20T11:00:00+02:00", "added_by": 2, "notes": "Forfait initial 20h" }
+  },
+  {
+    "model": "school.lesson", "pk": 1,
+    "fields": { "student": 1, "instructor": 1, "vehicle": 1, "date": "2026-05-06T09:00:00+02:00", "duration": 60, "status": "scheduled", "notes": "" }
+  },
+  {
+    "model": "school.lesson", "pk": 2,
+    "fields": { "student": 2, "instructor": 2, "vehicle": 2, "date": "2026-05-06T10:30:00+02:00", "duration": 60, "status": "scheduled", "notes": "Revoir le créneau parallèle" }
+  },
+  {
+    "model": "school.lesson", "pk": 3,
+    "fields": { "student": 1, "instructor": 1, "vehicle": 1, "date": "2026-04-28T14:00:00+02:00", "duration": 90, "status": "done", "notes": "Bonne séance" }
+  },
+  {
+    "model": "school.lesson", "pk": 4,
+    "fields": { "student": 3, "instructor": 1, "vehicle": 3, "date": "2026-04-20T20:00:00+02:00", "duration": 60, "status": "done", "notes": "" }
+  },
+  {
+    "model": "school.lesson", "pk": 5,
+    "fields": { "student": 1, "instructor": 2, "vehicle": 2, "date": "2026-05-12T09:00:00+02:00", "duration": 60, "status": "scheduled", "notes": "" }
+  },
+  {
+    "model": "school.exam", "pk": 1,
+    "fields": { "student": 3, "exam_type": "theory", "date": "2026-03-15", "result": "pass", "score": 38, "notes": "" }
+  },
+  {
+    "model": "school.exam", "pk": 2,
+    "fields": { "student": 1, "exam_type": "theory", "date": "2026-04-10", "result": "fail", "score": 31, "notes": "À repasser" }
+  },
+  {
+    "model": "school.exam", "pk": 3,
+    "fields": { "student": 3, "exam_type": "practical", "date": "2026-05-03", "result": "pending", "score": null, "notes": "" }
+  }
+]

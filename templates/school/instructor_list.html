@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block title %}Moniteurs{% endblock %} {% block
+content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">
+        <i class="bi bi-person-badge me-2"></i>Moniteurs
+    </h1>
+    <a href="{% url 'instructor-create' %}" class="btn btn-primary"
+        ><i class="bi bi-plus-lg me-1"></i>Nouveau moniteur</a
+    >
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if instructors %}
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instructor in instructors %}
+                <tr>
+                    <td>
+                        <a
+                            href="{% url 'instructor-detail' instructor.pk %}"
+                            class="fw-semibold text-decoration-none"
+                            >{{ instructor.user.last_name }} {{
+                            instructor.user.first_name }}</a
+                        >
+                    </td>
+                    <td>{{ instructor.user.email }}</td>
+                    <td>{{ instructor.phone }}</td>
+                    <td class="text-end">
+                        <a
+                            href="{% url 'instructor-update' instructor.pk %}"
+                            class="btn btn-sm btn-outline-secondary me-1"
+                            ><i class="bi bi-pencil"></i
+                        ></a>
+                        <a
+                            href="{% url 'instructor-delete' instructor.pk %}"
+                            class="btn btn-sm btn-outline-danger"
+                            ><i class="bi bi-trash"></i
+                        ></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted text-center py-5">Aucun moniteur enregistré.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

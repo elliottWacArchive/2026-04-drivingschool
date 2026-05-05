@@ -1,0 +1,359 @@
+{% extends "base.html" %} {% block title %}Tableau de bord{% endblock %} {%
+block content %} {# ── Vue Élève ── #} {% if user.role == 'student' %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-0">Bonjour, {{ user.first_name }} !</h1>
+        <p class="text-muted mb-0">Voici l'état de votre formation</p>
+    </div>
+    <span class="text-muted small"
+        >Contactez une secrétaire ou un moniteur pour prendre rendez-vous</span
+    >
+</div>
+
+<div class="card mb-4 border-start border-primary border-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold mb-0">
+                <i class="bi bi-clock-history me-2 text-primary"></i>Avancement
+                du forfait
+            </h6>
+            {% if available_minutes <= 0 %}
+            <span class="badge bg-danger"
+                >Forfait épuisé — contactez une secrétaire</span
+            >
+            {% elif available_minutes < 120 %}
+            <span class="badge bg-warning text-dark"
+                >Moins de 2h restantes</span
+            >
+            {% endif %}
+        </div>
+        {% with total=total_purchased used=total_used avail=available_minutes %}
+        {% if total > 0 %} {% widthratio used total 100 as pct %}
+        <div class="progress hours-bar mb-2" style="height: 10px">
+            <div
+                class="progress-bar bg-primary"
+                role="progressbar"
+                style="width:{{ pct }}%"
+            ></div>
+        </div>
+        {% endif %}
+        <div class="d-flex gap-4 text-sm">
+            <span class="text-muted"
+                >Acheté : <strong>{% widthratio total 60 1 %}h</strong></span
+            >
+            <span class="text-muted"
+                >Utilisé : <strong>{% widthratio used 60 1 %}h</strong></span
+            >
+            <span
+                class="{% if avail <= 0 %}text-danger{% elif avail < 120 %}text-warning{% else %}text-success{% endif %} fw-semibold"
+            >
+                Disponible : {% widthratio avail 60 1 %}h{{
+                avail|divisibleby:60|yesno:","|add:"" }} {% with
+                m=avail|divisibleby:60 %}{% endwith %}
+            </span>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+
+<div class="card">
+    <div
+        class="card-header bg-white d-flex justify-content-between align-items-center py-3"
+    >
+        <h5 class="mb-0">
+            <i class="bi bi-calendar3 me-2 text-primary"></i>Prochains
+            rendez-vous
+        </h5>
+        <a href="{% url 'lesson-list' %}" class="btn btn-sm btn-outline-primary"
+            >Voir tout</a
+        >
+    </div>
+    <div class="card-body p-0">
+        {% if upcoming_lessons %}
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Moniteur</th>
+                    <th>Type</th>
+                    <th>Lieu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in upcoming_lessons %}
+                <tr>
+                    <td>{{ lesson.date|date:"d/m/Y" }}</td>
+                    <td>{{ lesson.date|date:"H:i" }}</td>
+                    <td>{{ lesson.instructor }}</td>
+                    <td>
+                        <span class="badge bg-secondary"
+                            >{{ lesson.get_lesson_type_display }}</span
+                        >
+                    </td>
+                    <td>{{ lesson.location|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted text-center py-4">
+            Aucun rendez-vous planifié.
+            <a href="{% url 'lesson-book' %}">En prendre un ?</a>
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+{# ── Vue Moniteur ── #} {% elif user.role == 'instructor' %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-0">Bonjour, {{ user.first_name }} !</h1>
+        <p class="text-muted mb-0">
+            Vous avez {{ student_count }} élève{{ student_count|pluralize }}
+            actif{{ student_count|pluralize }}
+        </p>
+    </div>
+    <a href="{% url 'lesson-create-instructor' %}" class="btn btn-success"
+        ><i class="bi bi-calendar-plus me-1"></i>Planifier une leçon</a
+    >
+</div>
+
+<div class="card">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">
+            <i class="bi bi-calendar3 me-2 text-success"></i>Prochaines leçons
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if upcoming_lessons %}
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Élève</th>
+                    <th>Type</th>
+                    <th>Lieu</th>
+                    <th>Véhicule</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in upcoming_lessons %}
+                <tr>
+                    <td>{{ lesson.date|date:"d/m/Y" }}</td>
+                    <td>{{ lesson.date|date:"H:i" }}</td>
+                    <td>
+                        <a href="{% url 'student-detail' lesson.student.pk %}"
+                            >{{ lesson.student }}</a
+                        >
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary"
+                            >{{ lesson.get_lesson_type_display }}</span
+                        >
+                    </td>
+                    <td>{{ lesson.location|default:"—" }}</td>
+                    <td>{{ lesson.vehicle|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted text-center py-4">Aucune leçon planifiée.</p>
+        {% endif %}
+    </div>
+</div>
+
+{# ── Vue Secrétaire / Admin ── #} {% else %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">Tableau de bord</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'lesson-create' %}" class="btn btn-primary"
+            ><i class="bi bi-calendar-plus me-1"></i>Nouveau RDV</a
+        >
+        <a href="{% url 'student-create' %}" class="btn btn-outline-primary"
+            ><i class="bi bi-person-plus me-1"></i>Nouvel élève</a
+        >
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card p-3 border-start border-primary border-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 rounded p-2">
+                    <i class="bi bi-people fs-4 text-primary"></i>
+                </div>
+                <div>
+                    <div class="fs-2 fw-bold">{{ student_count }}</div>
+                    <div class="text-muted small">Élèves inscrits</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card p-3 border-start border-success border-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-success bg-opacity-10 rounded p-2">
+                    <i class="bi bi-person-badge fs-4 text-success"></i>
+                </div>
+                <div>
+                    <div class="fs-2 fw-bold">{{ instructor_count }}</div>
+                    <div class="text-muted small">Moniteurs</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card p-3 border-start border-warning border-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-warning bg-opacity-10 rounded p-2">
+                    <i class="bi bi-calendar3 fs-4 text-warning"></i>
+                </div>
+                <div>
+                    <div class="fs-2 fw-bold">
+                        {{ upcoming_lessons|length }}
+                    </div>
+                    <div class="text-muted small">RDV à venir</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a href="{% url 'planning' %}" class="text-decoration-none">
+            <div
+                class="card stat-card p-3 border-start border-info border-4 h-100"
+            >
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-info bg-opacity-10 rounded p-2">
+                        <i class="bi bi-calendar-week fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <div class="fs-2 fw-bold">
+                            <i class="bi bi-arrow-right-circle fs-4"></i>
+                        </div>
+                        <div class="text-muted small">Planning général</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div
+                class="card-header bg-white d-flex justify-content-between align-items-center py-3"
+            >
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar3 me-2 text-primary"></i>Prochains
+                    rendez-vous
+                </h5>
+                <a
+                    href="{% url 'planning' %}"
+                    class="btn btn-sm btn-outline-primary"
+                    >Planning complet</a
+                >
+            </div>
+            <div class="card-body p-0">
+                {% if upcoming_lessons %}
+                <table class="table table-hover mb-0 table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Élève</th>
+                            <th>Moniteur</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lesson in upcoming_lessons %}
+                        <tr>
+                            <td>
+                                <a
+                                    href="{% url 'student-detail' lesson.student.pk %}"
+                                    >{{ lesson.student }}</a
+                                >
+                            </td>
+                            <td>{{ lesson.instructor }}</td>
+                            <td>{{ lesson.date|date:"d/m H:i" }}</td>
+                            <td>
+                                <span class="badge bg-secondary"
+                                    >{{ lesson.get_lesson_type_display }}</span
+                                >
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted text-center py-4">
+                    Aucun rendez-vous planifié.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div
+                class="card-header bg-white d-flex justify-content-between align-items-center py-3"
+            >
+                <h5 class="mb-0">
+                    <i class="bi bi-clipboard-check me-2 text-success"></i
+                    >Derniers examens
+                </h5>
+                <a
+                    href="{% url 'exam-list' %}"
+                    class="btn btn-sm btn-outline-success"
+                    >Voir tout</a
+                >
+            </div>
+            <div class="card-body p-0">
+                {% if recent_exams %}
+                <table class="table table-hover mb-0 table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Élève</th>
+                            <th>Type</th>
+                            <th>Résultat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in recent_exams %}
+                        <tr>
+                            <td>
+                                <a
+                                    href="{% url 'student-detail' exam.student.pk %}"
+                                    >{{ exam.student }}</a
+                                >
+                            </td>
+                            <td>{{ exam.get_exam_type_display }}</td>
+                            <td>
+                                {% if exam.result == 'pass' %}<span
+                                    class="badge badge-pass"
+                                    >Reçu</span
+                                >
+                                {% elif exam.result == 'fail' %}<span
+                                    class="badge badge-fail"
+                                    >Échoué</span
+                                >
+                                {% else %}<span class="badge badge-pending"
+                                    >En attente</span
+                                >{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted text-center py-4">Aucun examen.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %} {% endblock %}

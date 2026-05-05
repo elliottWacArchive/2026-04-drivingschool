@@ -1,0 +1,137 @@
+{% extends "base.html" %} {% block title %}Élèves{% endblock %} {% block content
+%}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0"><i class="bi bi-people me-2"></i>Élèves</h1>
+    {% if user.role == 'secretary' or user.role == 'admin' %}
+    <a href="{% url 'student-create' %}" class="btn btn-primary"
+        ><i class="bi bi-person-plus me-1"></i>Nouvel élève</a
+    >
+    {% endif %}
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="d-flex gap-2">
+            <input
+                type="search"
+                name="q"
+                value="{{ request.GET.q }}"
+                placeholder="Nom, email, NEPH…"
+                class="form-control form-control-sm"
+                style="max-width: 300px"
+            />
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                Rechercher
+            </button>
+            {% if request.GET.q %}<a
+                href="{% url 'student-list' %}"
+                class="btn btn-sm btn-link text-danger"
+                >Effacer</a
+            >{% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if students %}
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Forfait disponible</th>
+                    {% if user.role == 'secretary' or user.role == 'admin' %}
+                    <th class="text-end">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <a
+                            href="{% url 'student-detail' student.pk %}"
+                            class="fw-semibold text-decoration-none"
+                            >{{ student.user.last_name }} {{
+                            student.user.first_name }}</a
+                        >
+                    </td>
+                    <td>{{ student.user.email }}</td>
+                    <td>{{ student.phone }}</td>
+                    <td>
+                        {% with avail=student.available_minutes %} {% if avail
+                        <= 0 %}
+                        <span class="badge bg-danger">Épuisé</span>
+                        {% elif avail < 120 %}
+                        <span class="badge bg-warning text-dark"
+                            >{{ avail }} min</span
+                        >
+                        {% else %}
+                        <span class="text-success fw-semibold"
+                            >{% widthratio avail 60 1 %}h</span
+                        >
+                        {% endif %} {% endwith %}
+                    </td>
+                    {% if user.role == 'secretary' or user.role == 'admin' %}
+                    <td class="text-end">
+                        <a
+                            href="{% url 'hour-package-create' student.pk %}"
+                            class="btn btn-sm btn-outline-success me-1"
+                            title="Ajouter des heures"
+                            ><i class="bi bi-plus-circle"></i
+                        ></a>
+                        <a
+                            href="{% url 'student-update' student.pk %}"
+                            class="btn btn-sm btn-outline-secondary me-1"
+                            ><i class="bi bi-pencil"></i
+                        ></a>
+                        <a
+                            href="{% url 'student-delete' student.pk %}"
+                            class="btn btn-sm btn-outline-danger"
+                            ><i class="bi bi-trash"></i
+                        ></a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if is_paginated %}
+        <div class="d-flex justify-content-center py-3">
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                            >&laquo;</a
+                        >
+                    </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                        <span class="page-link"
+                            >{{ page_obj.number }} / {{
+                            page_obj.paginator.num_pages }}</span
+                        >
+                    </li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                            >&raquo;</a
+                        >
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %} {% else %}
+        <p class="text-muted text-center py-5">Aucun élève trouvé.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
