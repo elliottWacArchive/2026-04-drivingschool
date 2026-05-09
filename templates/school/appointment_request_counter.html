@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Contre-proposition{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <a href="{% url 'appointment-request-list' %}"
+           class="text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i>Demandes
+        </a>
+
+        <h1 class="h3 fw-bold mb-0 mt-1">Faire une autre proposition</h1>
+    </div>
+
+    <div class="card form-card-lg">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-primary">Envoyer la proposition</button>
+                    <a href="{% url 'appointment-request-list' %}"
+                       class="btn btn-outline-secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

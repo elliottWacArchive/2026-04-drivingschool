@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Résultat code{% endblock %}
+
+{% block content %}
+    <h1 class="h3 fw-bold mb-4">Résultat</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="fw-bold mb-0">
+                Score : {{ score }} / {{ total }}
+            </h4>
+        </div>
+    </div>
+
+    {% for item in corrections %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="fw-bold">{{ item.question.text }}</h5>
+
+                {% if item.is_correct %}
+                    <span class="badge bg-success mb-2">Bonne réponse</span>
+                {% else %}
+                    <span class="badge bg-danger mb-2">Mauvaise réponse</span>
+                {% endif %}
+
+                <p class="mb-1">
+                    <strong>Bonne(s) réponse(s) :</strong>
+                        <ul class="mb-0">
+                            {% for answer in item.correct_answers %}
+                                <li>{{ answer.text }}</li>
+                            {% endfor %}
+                        </ul>
+                </p>
+
+                {% if item.question.explanation %}
+                    <p class="text-muted mb-0">
+                        {{ item.question.explanation }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <a href="{% url 'code-series-list' %}" class="btn btn-outline-primary">
+        Retour aux séries
+    </a>
+{% endblock %}

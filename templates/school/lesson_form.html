@@ -1,81 +1,94 @@
-{% extends "base.html" %} {% block title %}{{ title|default:"Leçon" }}{%
-endblock %} {% block content %}
-<div class="mb-4">
-    <a
-        href="{% url 'lesson-list' %}"
-        class="text-muted text-decoration-none small"
-        ><i class="bi bi-arrow-left me-1"></i>Leçons</a
-    >
-    <h1 class="h3 fw-bold mb-0 mt-1">{{ title|default:"Leçon" }}</h1>
-    {% if available_minutes is not None %} {% if available_minutes <= 0 %}
-    <div class="alert alert-danger mt-3">
-        <i class="bi bi-exclamation-triangle me-2"></i>Votre forfait est épuisé.
-        Contactez une secrétaire pour le recharger avant de prendre un
-        rendez-vous.
-    </div>
-    {% elif available_minutes < 120 %}
-    <div class="alert alert-warning mt-3">
-        <i class="bi bi-exclamation-circle me-2"></i>Il vous reste moins de 2h
-        ({{ available_minutes }} min). Pensez à recharger votre forfait.
-    </div>
-    {% endif %} {% endif %}
-</div>
+{% extends "base.html" %}
 
-<div class="card" style="max-width: 660px">
-    <div class="card-body">
-        <form method="post" novalidate>
-            {% csrf_token %} {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+{% block title %}
+    {{ title|default:"Leçon" }}
+{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <a href="{% url 'lesson-list' %}"
+           class="text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i>Leçons
+        </a>
+
+        <h1 class="h3 fw-bold mb-0 mt-1">{{ title|default:"Leçon" }}</h1>
+
+        {% if available_minutes is not None %}
+            {% if available_minutes <= 0 %}
+                <div class="alert alert-danger mt-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Votre forfait est épuisé. Contactez une secrétaire pour le recharger avant de prendre un rendez-vous.
+                </div>
+            {% elif available_minutes < 120 %}
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    Il vous reste moins de 2h ({{ available_minutes }} min). Pensez à recharger votre forfait.
+                </div>
             {% endif %}
-            <div class="row g-3">
-                {% if form.student %}
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Élève</label>
-                    {{ form.student }} {% if form.student.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ form.student.errors }}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Moniteur</label>
-                    {{ form.instructor }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Véhicule</label>
-                    {{ form.vehicle }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Date et heure</label>
-                    {{ form.date }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Durée (min)</label>
-                    {{ form.duration }}
-                </div>
-                {% if form.status %}
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Statut</label>
-                    {{ form.status }}
-                </div>
-                {% endif %}
-                <div class="col-12">
-                    <label class="form-label fw-semibold">Notes</label>
-                    {{ form.notes }}
-                </div>
-            </div>
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    Enregistrer
-                </button>
-                <a
-                    href="{% url 'lesson-list' %}"
-                    class="btn btn-outline-secondary"
-                    >Annuler</a
-                >
-            </div>
-        </form>
+        {% endif %}
     </div>
-</div>
+
+    <div class="card form-card-lg">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="row g-3">
+                    {% if form.student %}
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Élève</label>
+                            {{ form.student }}
+
+                            {% if form.student.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.student.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Moniteur</label>
+                        {{ form.instructor }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Véhicule</label>
+                        {{ form.vehicle }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date et heure</label>
+                        {{ form.date }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Durée (min)</label>
+                        {{ form.duration }}
+                    </div>
+
+                    {% if form.status %}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Statut</label>
+                            {{ form.status }}
+                        </div>
+                    {% endif %}
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Notes</label>
+                        {{ form.notes }}
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{% url 'lesson-list' %}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

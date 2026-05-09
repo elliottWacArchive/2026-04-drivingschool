@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if question %}Modifier la question{% else %}Ajouter une question{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <a href="{% url 'code-series-detail' series.pk %}"
+           class="text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i>{{ series.title }}
+        </a>
+
+        <h1 class="h3 fw-bold mb-0 mt-1">
+            {% if question %}Modifier la question{% else %}Ajouter une question{% endif %}
+        </h1>
+    </div>
+
+    <div class="card form-card-lg">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if question_form.non_field_errors %}
+                    <div class="alert alert-danger">{{ question_form.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Question</label>
+                    {{ question_form.text }}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Ordre</label>
+                        {{ question_form.order }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Explication</label>
+                    {{ question_form.explanation }}
+                </div>
+
+                <hr>
+
+                <h5 class="fw-bold mb-3">Réponses proposées</h5>
+
+                <div class="row g-3">
+                    {% for form in answer_forms %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100 bg-white">
+                                <label class="form-label fw-semibold">
+                                    Réponse {{ forloop.counter }}
+                                </label>
+
+                                {{ form.text }}
+
+                                <div class="form-check mt-2">
+                                    {{ form.is_correct }}
+                                    <label class="form-check-label">
+                                        Bonne réponse
+                                    </label>
+                                </div>
+
+                                {% if form.errors %}
+                                    <div class="text-danger small mt-2">
+                                        {{ form.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        {% if question %}Enregistrer les modifications{% else %}Ajouter la question{% endif %}
+                    </button>
+
+                    <a href="{% url 'code-series-detail' series.pk %}"
+                       class="btn btn-outline-secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

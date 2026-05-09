@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Code de la route{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold mb-0">
+            <i class="bi bi-journal-check me-2"></i>Code de la route
+        </h1>
+
+        {% if user.role == 'instructor' %}
+            <a href="{% url 'code-series-create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Nouvelle série
+            </a>
+        {% endif %}
+    </div>
+
+    {% if series_list %}
+        <div class="row g-3">
+            {% for series in series_list %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="fw-bold">{{ series.title }}</h5>
+                            {% if user.role == 'instructor' %}
+                                {% if not series.is_published %}
+                                    <span class="badge bg-secondary mb-2">
+                                        Brouillon
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success mb-2">
+                                        Publié
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                            <p class="text-muted small">{{ series.description|default:"Aucune description." }}</p>
+
+                            <p class="small mb-2">
+                                <strong>Questions :</strong> {{ series.questions.count }}
+                            </p>
+
+                            {% if user.role == 'student' %}
+                                <a href="{% url 'code-training' series.pk %}" class="btn btn-primary btn-sm">
+                                    S'entraîner
+                                </a>
+                            {% elif user.role == 'instructor' %}
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'code-series-detail' series.pk %}"
+                                    class="btn btn-outline-primary btn-sm">
+                                        Voir la série
+                                    </a>
+
+                                    <a href="{% url 'code-question-create' series.pk %}"
+                                    class="btn btn-success btn-sm">
+                                        Ajouter une question
+                                    </a>
+
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'code-series-update' series.pk %}"
+                                        class="btn btn-outline-secondary btn-sm flex-fill">
+                                            Modifier
+                                        </a>
+
+                                        <a href="{% url 'code-series-delete' series.pk %}"
+                                        class="btn btn-outline-danger btn-sm flex-fill">
+                                            Supprimer
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Aucune série disponible.</p>
+    {% endif %}
+{% endblock %}

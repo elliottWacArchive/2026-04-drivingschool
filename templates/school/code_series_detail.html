@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}{{ series.title }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'code-series-list' %}"
+               class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i>Séries
+            </a>
+
+            <h1 class="h3 fw-bold mb-0 mt-1">{{ series.title }}</h1>
+
+            {% if series.is_published %}
+                <span class="badge bg-success mt-2">Publié</span>
+            {% else %}
+                <span class="badge bg-secondary mt-2">Brouillon</span>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'code-question-create' series.pk %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Ajouter une question
+        </a>
+    </div>
+
+    {% if series.description %}
+        <p class="text-muted">{{ series.description }}</p>
+    {% endif %}
+
+    {% for question in series.questions.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between gap-3">
+                    <div>
+                        <h5 class="fw-bold">
+                            Question {{ forloop.counter }}
+                        </h5>
+
+                        <p>{{ question.text }}</p>
+
+                        {% if question.correct_answers_count > 1 %}
+                            <p class="small text-warning mb-2">
+                                Plusieurs réponses sont possibles.
+                            </p>
+                        {% else %}
+                            <p class="small text-muted mb-2">
+                                Une seule réponse est possible.
+                            </p>
+                        {% endif %}
+
+                        <ul class="mb-0">
+                            {% for answer in question.answers.all %}
+                                <li>
+                                    {{ answer.text }}
+
+                                    {% if answer.is_correct %}
+                                        <span class="badge bg-success ms-1">bonne réponse</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        {% if question.explanation %}
+                            <p class="text-muted small mt-3 mb-0">
+                                <strong>Explication :</strong> {{ question.explanation }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-start">
+                        <a href="{% url 'code-question-update' question.pk %}"
+                           class="btn btn-sm btn-outline-secondary">
+                            Modifier
+                        </a>
+
+                        <a href="{% url 'code-question-delete' question.pk %}"
+                           class="btn btn-sm btn-outline-danger">
+                            Supprimer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">Aucune question dans cette série.</p>
+    {% endfor %}
+{% endblock %}

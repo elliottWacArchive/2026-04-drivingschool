@@ -1,45 +1,51 @@
-{% extends "base.html" %} {% block title %}{% if object %}Modifier {{ object
-}}{% else %}Nouveau véhicule{% endif %}{% endblock %} {% block content %}
-<div class="mb-4">
-    <a
-        href="{% url 'vehicle-list' %}"
-        class="text-muted text-decoration-none small"
-        ><i class="bi bi-arrow-left me-1"></i>Véhicules</a
-    >
-    <h1 class="h3 fw-bold mb-0 mt-1">
-        {% if object %}Modifier {{ object }}{% else %}Nouveau véhicule{% endif
-        %}
-    </h1>
-</div>
-<div class="card" style="max-width: 400px">
-    <div class="card-body">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="row g-3">
-                <div class="col-12">
-                    <label class="form-label fw-semibold"
-                        >Nom du véhicule</label
-                    >
-                    {{ form.name }}
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-semibold"
-                        >Boîte de vitesses</label
-                    >
-                    {{ form.transmission }}
-                </div>
-            </div>
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    Enregistrer
-                </button>
-                <a
-                    href="{% url 'vehicle-list' %}"
-                    class="btn btn-outline-secondary"
-                    >Annuler</a
-                >
-            </div>
-        </form>
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}
+        Modifier {{ object }}
+    {% else %}
+        Nouveau véhicule
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <a href="{% url 'vehicle-list' %}"
+           class="text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i>Véhicules
+        </a>
+
+        <h1 class="h3 fw-bold mb-0 mt-1">
+            {% if object %}
+                Modifier {{ object }}
+            {% else %}
+                Nouveau véhicule
+            {% endif %}
+        </h1>
     </div>
-</div>
+
+    <div class="card form-card-xs">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nom du véhicule</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Boîte de vitesses</label>
+                        {{ form.transmission }}
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{% url 'vehicle-list' %}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

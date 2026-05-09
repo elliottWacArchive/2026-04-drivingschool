@@ -2,7 +2,19 @@ from datetime import timedelta
 
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import CustomUser, StudentProfile, InstructorProfile, HourPackage, Lesson, Exam, Vehicle
+from .models import (
+    CustomUser,
+    StudentProfile,
+    InstructorProfile,
+    HourPackage,
+    Lesson,
+    Exam,
+    Vehicle,
+    AppointmentRequest,
+    CodeSeries,
+    CodeQuestion,
+    CodeAnswer,
+)
 
 
 def _input():
@@ -287,3 +299,121 @@ class VehicleForm(forms.ModelForm):
             'name':         forms.TextInput(attrs={'class': _input()}),
             'transmission': forms.Select(attrs={'class': _select()}),
         }
+
+class AppointmentRequestForm(forms.ModelForm):
+    hours_requested = forms.IntegerField(
+        label="Nombre d’heures souhaitées",
+        min_value=1,
+        max_value=50,
+        required=False,
+        widget=forms.NumberInput(attrs={'class': _input()}),
+    )
+
+    proposed_date = forms.DateTimeField(
+        label="Date souhaitée",
+        input_formats=['%Y-%m-%dT%H:%M'],
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input()}),
+    )
+
+    class Meta:
+        model = AppointmentRequest
+        fields = [
+            'request_type',
+            'instructor',
+            'secretary',
+            'proposed_date',
+            'duration',
+            'message',
+        ]
+        widgets = {
+            'request_type': forms.Select(attrs={'class': _select()}),
+            'instructor': forms.Select(attrs={'class': _select()}),
+            'secretary': forms.Select(attrs={'class': _select()}),
+            'duration': forms.NumberInput(attrs={'class': _input()}),
+            'message': forms.Textarea(attrs={'class': _input(), 'rows': 2}),
+        }
+
+class AppointmentCounterForm(forms.Form):
+    proposed_date = forms.DateTimeField(
+        label="Nouvelle date proposée",
+        input_formats=['%Y-%m-%dT%H:%M'],
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': _input()}),
+    )
+    duration = forms.IntegerField(
+        label="Durée",
+        min_value=30,
+        max_value=180,
+        initial=60,
+        widget=forms.NumberInput(attrs={'class': _input()}),
+    )
+    message = forms.CharField(
+        label="Message",
+        required=False,
+        widget=forms.Textarea(attrs={'class': _input(), 'rows': 2}),
+    )
+
+# entrainement code
+
+class CodeSeriesForm(forms.ModelForm):
+    class Meta:
+        model = CodeSeries
+        fields = ['title', 'description', 'is_published']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': _input()}),
+            'description': forms.Textarea(attrs={'class': _input(), 'rows': 3}),
+            'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class CodeQuestionForm(forms.ModelForm):
+    class Meta:
+        model = CodeQuestion
+        fields = ['text', 'explanation', 'order']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': _input(), 'rows': 3}),
+            'explanation': forms.Textarea(attrs={'class': _input(), 'rows': 2}),
+            'order': forms.NumberInput(attrs={'class': _input()}),
+        }
+
+
+class CodeAnswerForm(forms.ModelForm):
+    class Meta:
+        model = CodeAnswer
+        fields = ['text', 'is_correct']
+        widgets = {
+            'text': forms.TextInput(attrs={'class': _input()}),
+            'is_correct': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class HourPurchaseForm(forms.Form):
+    PAYMENT_CHOICES = [
+        ('card', 'Carte bancaire'),
+        ('paypal', 'PayPal'),
+    ]
+
+    hours = forms.IntegerField(
+        label="Nombre d'heures à acheter",
+        min_value=1,
+        max_value=50,
+        widget=forms.NumberInput(attrs={'class': _input()}),
+    )
+
+    payment_method = forms.ChoiceField(
+        label="Moyen de paiement",
+        choices=PAYMENT_CHOICES,
+        widget=forms.Select(attrs={'class': _select()}),
+    )
+
+class StripeHourPurchaseForm(forms.Form):
+    PACK_CHOICES = [
+        (1, '1 heure — 45 €'),
+        (5, '5 heures — 225 €'),
+        (10, '10 heures — 450 €'),
+        (20, '20 heures — 900 €'),
+    ]
+
+    hours = forms.ChoiceField(
+        label="Forfait",
+        choices=PACK_CHOICES,
+        widget=forms.Select(attrs={'class': _select()}),
+    )

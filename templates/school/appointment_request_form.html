@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Demande de rendez-vous{% endblock %}
+
+{% block content %}
+    <h1 class="h3 fw-bold mb-4">Demande de rendez-vous</h1>
+
+    <div class="card form-card-lg">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="{{ form.request_type.id_for_label }}">
+                        Type de demande
+                    </label>
+                    {{ form.request_type }}
+                </div>
+
+                <div class="mb-3" id="instructor-field">
+                    <label class="form-label fw-semibold" for="{{ form.instructor.id_for_label }}">
+                        Moniteur
+                    </label>
+                    {{ form.instructor }}
+                </div>
+
+                <div class="mb-3" id="secretary-field">
+                    <label class="form-label fw-semibold" for="{{ form.secretary.id_for_label }}">
+                        Secrétaire
+                    </label>
+                    {{ form.secretary }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="{{ form.proposed_date.id_for_label }}">
+                        Date souhaitée
+                    </label>
+                    {{ form.proposed_date }}
+                </div>
+
+                <div class="mb-3" id="duration-field">
+                    <label class="form-label fw-semibold" for="{{ form.duration.id_for_label }}">
+                        Durée du rendez-vous
+                    </label>
+                    {{ form.duration }}
+                </div>
+
+                <div class="mb-3" id="hours-field">
+                    <label class="form-label fw-semibold" for="{{ form.hours_requested.id_for_label }}">
+                        Nombre d’heures souhaitées
+                    </label>
+                    {{ form.hours_requested }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="{{ form.message.id_for_label }}">
+                        Message
+                    </label>
+                    {{ form.message }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function updateRequestForm() {
+            const type = document.getElementById("id_request_type").value;
+
+            document.getElementById("instructor-field").style.display =
+                type === "lesson" ? "block" : "none";
+
+            document.getElementById("secretary-field").style.display =
+                type === "secretary_meeting" || type === "hours" ? "block" : "none";
+
+            document.getElementById("duration-field").style.display =
+                type === "lesson" || type === "secretary_meeting" ? "block" : "none";
+
+            document.getElementById("hours-field").style.display =
+                type === "hours" ? "block" : "none";
+        }
+
+        document.getElementById("id_request_type").addEventListener("change", updateRequestForm);
+        updateRequestForm();
+    </script>
+{% endblock %}

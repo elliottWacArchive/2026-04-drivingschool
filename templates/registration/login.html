@@ -1,57 +1,50 @@
-{% extends "base.html" %} {% block title %}Connexion{% endblock %} {% block
-content %}
-<div
-    class="row justify-content-center align-items-center"
-    style="min-height: 100vh; margin: -2rem"
->
-    <div class="col-sm-8 col-md-5 col-lg-4">
-        <div class="text-center mb-4">
-            <i
-                class="bi bi-car-front-fill text-primary"
-                style="font-size: 3rem"
-            ></i>
-            <h2 class="mt-2 fw-bold">Intranet Auto-École</h2>
-            <p class="text-muted">
-                Connectez-vous pour accéder à l'espace de gestion
-            </p>
-        </div>
-        <div class="card p-4">
-            <form method="post">
-                {% csrf_token %} {% if form.errors %}
-                <div class="alert alert-danger">
-                    Identifiants incorrects. Veuillez réessayer.
-                </div>
-                {% endif %}
-                <div class="mb-3">
-                    <label for="id_username" class="form-label fw-semibold"
-                        >Identifiant</label
-                    >
-                    <input
-                        type="text"
-                        name="username"
-                        id="id_username"
-                        class="form-control"
-                        autofocus
-                        required
-                    />
-                </div>
-                <div class="mb-3">
-                    <label for="id_password" class="form-label fw-semibold"
-                        >Mot de passe</label
-                    >
-                    <input
-                        type="password"
-                        name="password"
-                        id="id_password"
-                        class="form-control"
-                        required
-                    />
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    Se connecter
-                </button>
-            </form>
+{% extends "base.html" %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center align-items-center login-page">
+        <div class="col-sm-8 col-md-5 col-lg-4">
+            <div class="text-center mb-4">
+                <i class="bi bi-car-front-fill text-primary login-icon"></i>
+                <h2 class="mt-2 fw-bold">Intranet Auto-École</h2>
+                <p class="text-muted">Connectez-vous pour accéder à l'espace de gestion</p>
+            </div>
+
+            <div class="card p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Identifiants incorrects. Veuillez réessayer.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-semibold">Identifiant</label>
+                        <input type="text"
+                               name="username"
+                               id="id_username"
+                               class="form-control"
+                               autofocus
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label fw-semibold">Mot de passe</label>
+                        <input type="password"
+                               name="password"
+                               id="id_password"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Se connecter
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

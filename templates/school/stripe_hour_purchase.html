@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Acheter des heures{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">
+                <i class="bi bi-credit-card me-2"></i>Acheter des heures de conduite
+            </h1>
+            <p class="text-muted mb-0">Consultez nos différentes offres et ajoutez facilement des heures supplémentaires à votre formation</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for pack in packs %}
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-primary bg-opacity-10 text-primary mb-3 align-self-center">
+                            Forfait {{ pack.hours }}h
+                        </span>
+
+                        <h2 class="fw-bold mb-2">Tarif {{ pack.hours }}h</h2>
+
+                        <p class="display-5 fw-bold text-primary mb-1">
+                            {{ pack.price_euros|floatformat:2 }} €
+                        </p>
+
+                        <p class="text-muted small mb-4">
+                            {{ price_per_hour_display }} / heure
+                        </p>
+
+                        <form method="post" class="mt-auto">
+                            {% csrf_token %}
+                            <input type="hidden" name="hours" value="{{ pack.hours }}">
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-lock-fill me-1"></i>Payer avec Stripe
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        Paiement sécurisé via Stripe en mode test. Les heures seront ajoutées automatiquement après validation du paiement.
+    </div> -->
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Demandes de rendez-vous{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold mb-0">
+            <i class="bi bi-envelope me-2"></i>Demandes de rendez-vous
+        </h1>
+
+        {% if user.role == 'student' %}
+            <a href="{% url 'appointment-request-create' %}" class="btn btn-primary">
+                <i class="bi bi-calendar-plus me-1"></i>Nouvelle demande
+            </a>
+        {% endif %}
+    </div>
+
+    {% for r in requests %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between gap-3">
+                    <div>
+                        <strong>Type :</strong> {{ r.get_request_type_display }}<br>
+
+                        {% if user.role == 'student' %}
+                            {% if r.request_type == 'hours' %}
+                                <strong>Secrétaire :</strong> {{ r.secretary|default:"Non assignée" }}<br>
+                            {% else %}
+                                <strong>Moniteur :</strong> {{ r.instructor|default:"Non assigné" }}<br>
+                            {% endif %}
+                        {% else %}
+                            <strong>Élève :</strong> {{ r.student }}<br>
+
+                            {% if r.request_type == 'hours' %}
+                                <strong>Secrétaire :</strong> {{ r.secretary|default:"Non assignée" }}<br>
+                            {% else %}
+                                <strong>Moniteur :</strong> {{ r.instructor|default:"Non assigné" }}<br>
+                            {% endif %}
+                        {% endif %}
+
+                        <strong>Date proposée :</strong> {{ r.proposed_date|date:"d/m/Y H:i" }}<br>
+
+                        {% if r.request_type == 'lesson' %}
+                            <strong>Durée :</strong> {{ r.duration }} min<br>
+                        {% endif %}
+
+                        {% if r.message %}
+                            <span class="text-muted">{{ r.message }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        {% if r.status == 'accepted' %}
+                            <span class="badge bg-success">{{ r.get_status_display }}</span>
+                        {% elif r.status == 'refused' %}
+                            <span class="badge bg-danger">{{ r.get_status_display }}</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">{{ r.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if r.status != 'accepted' and r.status != 'refused' %}
+                    <div class="mt-3 d-flex gap-2">
+                        {% if user.role == 'secretary' or user.role == 'admin' %}
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'accept' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm">Accepter</button>
+                            </form>
+
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'refuse' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm">Refuser</button>
+                            </form>
+
+                            <a href="{% url 'appointment-request-counter' r.pk %}"
+                               class="btn btn-outline-primary btn-sm">
+                                Faire une autre proposition
+                            </a>
+                        {% endif %}
+
+                        {% if user.role == 'instructor' and r.status == 'pending_instructor' %}
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'accept' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm">Accepter</button>
+                            </form>
+
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'refuse' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm">Refuser</button>
+                            </form>
+
+                            <a href="{% url 'appointment-request-counter' r.pk %}"
+                               class="btn btn-outline-primary btn-sm">
+                                Faire une autre proposition
+                            </a>
+                        {% endif %}
+
+                        {% if user.role == 'student' and r.status == 'pending_student' %}
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'accept' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm">Accepter</button>
+                            </form>
+
+                            <form method="post" action="{% url 'appointment-request-action' r.pk 'refuse' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm">Refuser</button>
+                            </form>
+
+                            <a href="{% url 'appointment-request-counter' r.pk %}"
+                               class="btn btn-outline-primary btn-sm">
+                                Faire une autre proposition
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">Aucune demande de rendez-vous.</p>
+    {% endfor %}
+{% endblock %}

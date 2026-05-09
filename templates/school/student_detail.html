@@ -1,265 +1,261 @@
-{% extends "base.html" %} {% block title %}{{ student }}{% endblock %} {% block
-content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <a
-            href="{% url 'student-list' %}"
-            class="text-muted text-decoration-none small"
-            ><i class="bi bi-arrow-left me-1"></i>Élèves</a
-        >
-        <h1 class="h3 fw-bold mb-0 mt-1">
-            {{ student.user.first_name }} {{ student.user.last_name }}
-        </h1>
-    </div>
-    {% if user.role == 'secretary' or user.role == 'admin' %}
-    <div class="d-flex gap-2">
-        <a
-            href="{% url 'hour-package-create' student.pk %}"
-            class="btn btn-success"
-            ><i class="bi bi-plus-circle me-1"></i>Ajouter des heures</a
-        >
-        <a
-            href="{% url 'student-update' student.pk %}"
-            class="btn btn-outline-secondary"
-            ><i class="bi bi-pencil me-1"></i>Modifier</a
-        >
-        <a
-            href="{% url 'student-delete' student.pk %}"
-            class="btn btn-outline-danger"
-            ><i class="bi bi-trash me-1"></i>Supprimer</a
-        >
-    </div>
-    {% endif %}
-</div>
+{% extends "base.html" %}
 
-<div class="row g-3 mb-3">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-header bg-white fw-semibold">
-                <i class="bi bi-person me-2"></i>Informations
-            </div>
-            <div class="card-body">
-                <dl class="row mb-0 small">
-                    <dt class="col-5 text-muted">Email</dt>
-                    <dd class="col-7">{{ student.user.email }}</dd>
-                    <dt class="col-5 text-muted">Téléphone</dt>
-                    <dd class="col-7">{{ student.phone }}</dd>
-                    <dt class="col-5 text-muted">Naissance</dt>
-                    <dd class="col-7">{{ student.birth_date|date:"d/m/Y" }}</dd>
-                    <dt class="col-5 text-muted">Adresse</dt>
-                    <dd class="col-7">{{ student.address }}</dd>
-                </dl>
-            </div>
+{% block title %}{{ student }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'student-list' %}"
+               class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i>Élèves
+            </a>
+            <h1 class="h3 fw-bold mb-0 mt-1">
+                {{ student.user.first_name }} {{ student.user.last_name }}
+            </h1>
         </div>
+
+        {% if user.role == 'secretary' or user.role == 'admin' %}
+            <div class="d-flex gap-2">
+                <a href="{% url 'hour-package-create' student.pk %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-1"></i>Ajouter des heures
+                </a>
+                <a href="{% url 'student-update' student.pk %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-pencil me-1"></i>Modifier
+                </a>
+                <a href="{% url 'student-delete' student.pk %}" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </a>
+            </div>
+        {% endif %}
     </div>
 
-    <div class="col-md-8">
-        <div class="card h-100">
-            <div
-                class="card-header bg-white fw-semibold d-flex justify-content-between"
-            >
-                <span
-                    ><i class="bi bi-clock-history me-2"></i>Forfait
-                    d'heures</span
-                >
-                {% if user.role == 'secretary' or user.role == 'admin' %}
-                <a
-                    href="{% url 'hour-package-create' student.pk %}"
-                    class="btn btn-sm btn-outline-success"
-                    >+ Recharger</a
-                >
-                {% endif %}
-            </div>
-            <div class="card-body">
-                {% with total=total_purchased used=total_used
-                avail=available_minutes %}
-                <div class="row g-3 mb-3 text-center">
-                    <div class="col-4">
-                        <div class="fw-bold fs-4 text-primary">
-                            {% widthratio total 60 1 %}h
-                        </div>
-                        <div class="text-muted small">Acheté</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="fw-bold fs-4 text-secondary">
-                            {% widthratio used 60 1 %}h
-                        </div>
-                        <div class="text-muted small">Utilisé</div>
-                    </div>
-                    <div class="col-4">
-                        <div
-                            class="fw-bold fs-4 {% if avail <= 0 %}text-danger{% elif avail < 120 %}text-warning{% else %}text-success{% endif %}"
-                        >
-                            {% widthratio avail 60 1 %}h
-                        </div>
-                        <div class="text-muted small">Disponible</div>
-                    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-white fw-semibold">
+                    <i class="bi bi-person me-2"></i>Informations
                 </div>
-                {% if total > 0 %} {% widthratio used total 100 as pct %}
-                <div
-                    class="progress mb-2"
-                    style="height: 10px; border-radius: 5px"
-                >
-                    <div
-                        class="progress-bar bg-primary"
-                        style="width:{{ pct }}%"
-                    ></div>
+
+                <div class="card-body">
+                    <dl class="row mb-0 small">
+                        <dt class="col-5 text-muted">Email</dt>
+                        <dd class="col-7">{{ student.user.email }}</dd>
+
+                        <dt class="col-5 text-muted">Téléphone</dt>
+                        <dd class="col-7">{{ student.phone }}</dd>
+
+                        <dt class="col-5 text-muted">Naissance</dt>
+                        <dd class="col-7">{{ student.birth_date|date:"d/m/Y" }}</dd>
+
+                        <dt class="col-5 text-muted">Adresse</dt>
+                        <dd class="col-7">{{ student.address }}</dd>
+                    </dl>
                 </div>
-                {% endif %} {% endwith %} {% if packages %}
-                <details class="mt-2">
-                    <summary class="text-muted small" style="cursor: pointer">
-                        Historique des recharges ({{ packages|length }})
-                    </summary>
-                    <table class="table table-sm mt-2 mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Date</th>
-                                <th>Heures</th>
-                                <th>Ajouté par</th>
-                                <th>Notes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for pkg in packages %}
-                            <tr>
-                                <td>{{ pkg.purchased_at|date:"d/m/Y" }}</td>
-                                <td class="fw-semibold">
-                                    {{ pkg.hours_display }}
-                                </td>
-                                <td>
-                                    {{
-                                    pkg.added_by.get_full_name|default:pkg.added_by.username
-                                    }}
-                                </td>
-                                <td class="text-muted small">
-                                    {{ pkg.notes|default:"—" }}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </details>
-                {% endif %}
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row g-3">
-    <div class="col-lg-7">
-        <div class="card">
-            <div
-                class="card-header bg-white fw-semibold d-flex justify-content-between"
-            >
-                <span
-                    ><i class="bi bi-calendar3 me-2"></i>Leçons ({{
-                    lessons|length }})</span
-                >
-                {% if user.role == 'secretary' or user.role == 'admin' %}
-                <a
-                    href="{% url 'lesson-create' %}"
-                    class="btn btn-sm btn-outline-primary"
-                    >+ Ajouter</a
-                >
-                {% endif %}
-            </div>
-            <div class="card-body p-0">
-                {% if lessons %}
-                <table class="table table-sm mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Moniteur</th>
-                            <th>Véhicule</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lesson in lessons %}
-                        <tr>
-                            <td>{{ lesson.date|date:"d/m/Y H:i" }}</td>
-                            <td>{{ lesson.instructor }}</td>
-                            <td>{{ lesson.vehicle|default:"—" }}</td>
-                            <td>
-                                {% if lesson.status == 'done' %}<span
-                                    class="badge bg-success"
-                                    >Effectuée</span
-                                >
-                                {% elif lesson.status == 'cancelled' %}<span
-                                    class="badge bg-danger"
-                                    >Annulée</span
-                                >
-                                {% else %}<span class="badge bg-primary"
-                                    >Planifiée</span
-                                >{% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p class="text-muted text-center py-3 mb-0">Aucune leçon.</p>
-                {% endif %}
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header bg-white fw-semibold d-flex justify-content-between">
+                    <span>
+                        <i class="bi bi-clock-history me-2"></i>Forfait d'heures
+                    </span>
+
+                    {% if user.role == 'secretary' or user.role == 'admin' %}
+                        <a href="{% url 'hour-package-create' student.pk %}"
+                           class="btn btn-sm btn-outline-success">
+                            + Recharger
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    {% with total=total_purchased used=total_used avail=available_minutes %}
+                        <div class="row g-3 mb-3 text-center">
+                            <div class="col-4">
+                                <div class="fw-bold fs-4 text-primary">
+                                    {% widthratio total 60 1 %}h
+                                </div>
+                                <div class="text-muted small">Acheté</div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="fw-bold fs-4 text-secondary">
+                                    {% widthratio used 60 1 %}h
+                                </div>
+                                <div class="text-muted small">Utilisé</div>
+                            </div>
+
+                            <div class="col-4">
+                                {% if avail <= 0 %}
+                                    <div class="fw-bold fs-4 text-danger">
+                                        {% widthratio avail 60 1 %}h
+                                    </div>
+                                {% elif avail < 120 %}
+                                    <div class="fw-bold fs-4 text-warning">
+                                        {% widthratio avail 60 1 %}h
+                                    </div>
+                                {% else %}
+                                    <div class="fw-bold fs-4 text-success">
+                                        {% widthratio avail 60 1 %}h
+                                    </div>
+                                {% endif %}
+                                <div class="text-muted small">Disponible</div>
+                            </div>
+                        </div>
+
+                        {% if total > 0 %}
+                            {% widthratio used total 100 as pct %}
+                            <div class="progress hours-bar mb-2">
+                                <div class="progress-bar bg-primary progress-percent-{{ pct }}"
+                                     role="progressbar"
+                                     aria-valuenow="{{ pct }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    {% if packages %}
+                        <details class="mt-2">
+                            <summary class="text-muted small pointer-summary">
+                                Historique des recharges ({{ packages|length }})
+                            </summary>
+
+                            <table class="table table-sm mt-2 mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Heures</th>
+                                        <th>Ajouté par</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for pkg in packages %}
+                                        <tr>
+                                            <td>{{ pkg.purchased_at|date:"d/m/Y" }}</td>
+                                            <td class="fw-semibold">{{ pkg.hours_display }}</td>
+                                            <td>
+                                                {{ pkg.added_by.get_full_name|default:pkg.added_by.username }}
+                                            </td>
+                                            <td class="text-muted small">{{ pkg.notes|default:"—" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </details>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-5">
-        <div class="card">
-            <div
-                class="card-header bg-white fw-semibold d-flex justify-content-between"
-            >
-                <span
-                    ><i class="bi bi-clipboard-check me-2"></i>Examens ({{
-                    exams|length }})</span
-                >
-                {% if user.role == 'secretary' or user.role == 'admin' %}
-                <a
-                    href="{% url 'exam-create' %}"
-                    class="btn btn-sm btn-outline-success"
-                    >+ Ajouter</a
-                >
-                {% endif %}
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header bg-white fw-semibold d-flex justify-content-between">
+                    <span>
+                        <i class="bi bi-calendar3 me-2"></i>Leçons ({{ lessons|length }})
+                    </span>
+
+                    {% if user.role == 'secretary' or user.role == 'admin' %}
+                        <a href="{% url 'lesson-create' %}" class="btn btn-sm btn-outline-primary">
+                            + Ajouter
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-0">
+                    {% if lessons %}
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Moniteur</th>
+                                    <th>Véhicule</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for lesson in lessons %}
+                                    <tr>
+                                        <td>{{ lesson.date|date:"d/m/Y H:i" }}</td>
+                                        <td>{{ lesson.instructor }}</td>
+                                        <td>{{ lesson.vehicle|default:"—" }}</td>
+                                        <td>
+                                            {% if lesson.status == 'done' %}
+                                                <span class="badge bg-success">Effectuée</span>
+                                            {% elif lesson.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Annulée</span>
+                                            {% else %}
+                                                <span class="badge bg-primary">Planifiée</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted text-center py-3 mb-0">Aucune leçon.</p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="card-body p-0">
-                {% if exams %}
-                <table class="table table-sm mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Résultat</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for exam in exams %}
-                        <tr>
-                            <td>{{ exam.date|date:"d/m/Y" }}</td>
-                            <td>{{ exam.get_exam_type_display }}</td>
-                            <td>
-                                {% if exam.result == 'pass' %}<span
-                                    class="badge badge-pass"
-                                    >Reçu</span
-                                >
-                                {% elif exam.result == 'fail' %}<span
-                                    class="badge badge-fail"
-                                    >Échoué</span
-                                >
-                                {% else %}<span class="badge badge-pending"
-                                    >En attente</span
-                                >{% endif %}
-                            </td>
-                            <td>{{ exam.score|default:"—" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p class="text-muted text-center py-3 mb-0">Aucun examen.</p>
-                {% endif %}
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header bg-white fw-semibold d-flex justify-content-between">
+                    <span>
+                        <i class="bi bi-clipboard-check me-2"></i>Examens ({{ exams|length }})
+                    </span>
+
+                    {% if user.role == 'secretary' or user.role == 'admin' %}
+                        <a href="{% url 'exam-create' %}" class="btn btn-sm btn-outline-success">
+                            + Ajouter
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-0">
+                    {% if exams %}
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Résultat</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for exam in exams %}
+                                    <tr>
+                                        <td>{{ exam.date|date:"d/m/Y" }}</td>
+                                        <td>{{ exam.get_exam_type_display }}</td>
+                                        <td>
+                                            {% if exam.result == 'pass' %}
+                                                <span class="badge badge-pass">Reçu</span>
+                                            {% elif exam.result == 'fail' %}
+                                                <span class="badge badge-fail">Échoué</span>
+                                            {% else %}
+                                                <span class="badge badge-pending">En attente</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ exam.score|default:"—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted text-center py-3 mb-0">Aucun examen.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

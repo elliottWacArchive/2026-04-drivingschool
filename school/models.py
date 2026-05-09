@@ -162,3 +162,166 @@ class Exam(models.Model):
 
     def __str__(self):
         return f"{self.student} – {self.get_exam_type_display()} ({self.date})"
+    
+class AppointmentRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending_instructor', 'En attente du moniteur'),
+        ('pending_student', 'En attente de l’élève'),
+        ('accepted', 'Acceptée'),
+        ('refused', 'Refusée'),
+    ]
+
+    REQUEST_TYPE_CHOICES = [
+        ('lesson', 'Rendez-vous de conduite'),
+        ('secretary_meeting', 'Rendez-vous avec une secrétaire'),
+        ('hours', 'Achat d’heures'),
+    ]
+
+    request_type = models.CharField(
+        max_length=20,
+        choices=REQUEST_TYPE_CHOICES,
+        default='lesson',
+    )
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.CASCADE,
+        related_name='appointment_requests'
+    )
+
+    instructor = models.ForeignKey(
+        InstructorProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='appointment_requests'
+    )
+
+    secretary = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='secretary_requests',
+        limit_choices_to={'role': CustomUser.ROLE_SECRETARY},
+    )
+
+    proposed_date = models.DateTimeField()
+    duration = models.PositiveIntegerField(default=60)
+
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default='pending_instructor'
+    )
+
+    message = models.TextField(blank=True)
+
+    last_proposed_by = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        target = self.instructor or self.secretary
+        return f"{self.student} → {target} ({self.get_status_display()})"
+    
+class CodeSeries(models.Model):
+    title = models.CharField(max_length=150, verbose_name="Titre")
+    description = models.TextField(blank=True, verbose_name="Description")
+    instructor = models.ForeignKey(
+        InstructorProfile,
+        on_delete=models.CASCADE,
+        related_name='code_series',
+        verbose_name="Moniteur"
+    )
+    is_published = models.BooleanField(default=True, verbose_name="Publié")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Série de questions code"
+        verbose_name_plural = "Séries de questions code"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class CodeQuestion(models.Model):
+    series = models.ForeignKey(
+        CodeSeries,
+        on_delete=models.CASCADE,
+        related_name='questions'
+    )
+    text = models.TextField()
+    explanation = models.TextField(blank=True)
+    order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Question"
+        verbose_name_plural = "Questions"
+
+    def correct_answers_count(self):
+        return self.answers.filter(is_correct=True).count()
+
+    def __str__(self):
+        return f"Question {self.order} - {self.series.title}"
+
+
+class CodeAnswer(models.Model):
+    question = models.ForeignKey(
+        CodeQuestion,
+        on_delete=models.CASCADE,
+        related_name='answers',
+        verbose_name="Question"
+    )
+    text = models.CharField(max_length=255, verbose_name="Réponse")
+    is_correct = models.BooleanField(default=False, verbose_name="Bonne réponse")
+
+    class Meta:
+        verbose_name = "Réponse de code"
+        verbose_name_plural = "Réponses de code"
+
+    def __str__(self):
+        return self.text
+    
+class Payment(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('paid', 'Payé'),
+        ('cancelled', 'Annulé'),
+        ('failed', 'Échoué'),
+    ]
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
+    hours = models.PositiveIntegerField(verbose_name="Heures achetées")
+    amount_cents = models.PositiveIntegerField(verbose_name="Montant en centimes")
+    currency = models.CharField(max_length=10, default='eur')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    stripe_session_id = models.CharField(max_length=255, blank=True)
+    stripe_payment_intent = models.CharField(max_length=255, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Paiement"
+        verbose_name_plural = "Paiements"
+        ordering = ['-created_at']
+
+    def amount_display(self):
+        return f"{self.amount_cents / 100:.2f} €"
+
+    def __str__(self):
+        return f"{self.student} - {self.hours}h - {self.amount_display()}"
